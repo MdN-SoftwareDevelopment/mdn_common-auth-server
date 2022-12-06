@@ -1,5 +1,5 @@
 {
-  "name": "mdn-commonauth-server",
+  "name": "@mdn_sd/mdn-common-auth-server",
   "version": "1.0.0",
   "description": "## Software Development II",
   "main": "src/index.js",
@@ -13,7 +13,7 @@
     "url": "git+ssh://git@gitlab.com/mdn-desarrollodesotfware/mdn-commonauth-server.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "MdN",
   "license": "ISC",
   "bugs": {
     "url": "https://gitlab.com/mdn-desarrollodesotfware/mdn-commonauth-server/issues"
