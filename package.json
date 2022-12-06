@@ -1,0 +1,40 @@
+{
+  "name": "mdn-commonauth-server",
+  "version": "1.0.0",
+  "description": "## Software Development II",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/mdn-desarrollodesotfware/mdn-commonauth-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/mdn-desarrollodesotfware/mdn-commonauth-server/issues"
+  },
+  "homepage": "https://gitlab.com/mdn-desarrollodesotfware/mdn-commonauth-server#readme",
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "4.18.2",
+    "morgan": "1.10.0",
+    "mysql2": "2.3.3"
+  },
+  "devDependencies": {
+    "eslint": "8.28.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-config-standard": "17.0.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-n": "15.5.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-promise": "6.1.1",
+    "nodemon": "2.0.20",
+    "prettier": "2.8.0"
+  }
+}
