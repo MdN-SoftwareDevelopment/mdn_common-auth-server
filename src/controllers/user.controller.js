@@ -12,7 +12,7 @@ export const postUser = async (req, res) => {
     await pool.query('INSERT INTO user SET ?', [user]);
 
     let result;
-    if (req.body.user_image !== '/src/assets/addImage.png') {
+    if (req.body.user_image !== '/assets/addImage.png') {
       result = await uploadImage(req.body.user_image);
     } else {
       result = {
