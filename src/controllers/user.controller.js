@@ -89,7 +89,7 @@ export const getToken = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const [user] = await pool.query(
-      'SELECT u.email, r.name, ui.image_url FROM rol AS r\
+      'SELECT u.id_user, u.email, r.name, ui.image_url FROM rol AS r\
         JOIN user_rol AS ur ON r.id_rol = ur.id_rol\
         JOIN user AS u ON ur.id_user = u.id_user\
         JOIN user_image AS ui ON u.id_user = ui.id_user\
@@ -97,6 +97,7 @@ export const getUser = async (req, res) => {
       [req.params.token]
     );
     res.send({
+      token: user[0].id_user,
       email: user[0].email,
       rol: user[0].name,
       user_image: user[0].image_url
