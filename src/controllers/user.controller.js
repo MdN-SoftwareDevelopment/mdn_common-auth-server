@@ -85,3 +85,23 @@ export const getToken = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const getUser = async (req, res) => {
+  try {
+    const [user] = await pool.query(
+      'SELECT u.email, r.name, ui.image_url FROM rol AS r\
+        JOIN user_rol AS ur ON r.id_rol = ur.id_rol\
+        JOIN user AS u ON ur.id_user = u.id_user\
+        JOIN user_image AS ui ON u.id_user = ui.id_user\
+      WHERE u.id_user = ?',
+      [req.params.token]
+    );
+    res.send({
+      email: user[0].email,
+      rol: user[0].name,
+      user_image: user[0].image_url
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
