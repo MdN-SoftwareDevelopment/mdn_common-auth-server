@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import {
-  postApplication,
-  postRoles
+  getApplication,
+  postApplication
 } from '../controllers/application.controller.js';
 
 const router = Router();
 
 router.post('/new', postApplication);
-router.post('/roles/:id_application', postRoles);
+router.get('/:id_application', getApplication);
 
 export default router;

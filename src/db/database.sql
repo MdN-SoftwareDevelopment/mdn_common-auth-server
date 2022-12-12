@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS application (
 );
 
 CREATE TABLE IF NOT EXISTS application_image ( 
-    id_application_image VARCHAR(512) NOT NULL PRIMARY KEY UNIQUE,
+    id_application_image INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    id_image VARCHAR(512) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     id_application VARCHAR(512) NOT NULL UNIQUE,
     FOREIGN KEY (id_application) REFERENCES application(id_application)
@@ -43,15 +44,16 @@ CREATE TABLE IF NOT EXISTS user (
 );
 
 CREATE TABLE IF NOT EXISTS user_image (
-    id_user_image VARCHAR(512) NOT NULL PRIMARY KEY UNIQUE,
+    id_user_image INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    id_image VARCHAR(512) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     id_user VARCHAR(512) NOT NULL UNIQUE,
     FOREIGN KEY (id_user) REFERENCES user(id_user)
 );
 
 CREATE TABLE IF NOT EXISTS user_rol (
-    id_user VARCHAR(512) NOT NULL PRIMARY KEY UNIQUE,
-    id_rol INT NOT NULL UNIQUE,
+    id_user VARCHAR(512) NOT NULL PRIMARY KEY,
+    id_rol INT NOT NULL,
     FOREIGN KEY (id_user) REFERENCES user(id_user),
     FOREIGN KEY (id_rol) REFERENCES rol(id_rol)
 );
