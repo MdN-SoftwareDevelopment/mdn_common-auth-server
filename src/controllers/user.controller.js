@@ -18,8 +18,8 @@ export const postUser = async (req, res) => {
       result = {
         public_id: 'common_auth/default_user',
         secure_url:
-          'https://res.cloudinary.com/drxe5f7aw/image/upload/\
-v1670560975/common_auth/default_user_qsdqlf.png'
+          'https://res.cloudinary.com/drxe5f7aw/image/upload/' +
+          'v1670560975/common_auth/default_user_qsdqlf.png'
       };
     }
 
@@ -47,10 +47,10 @@ v1670560975/common_auth/default_user_qsdqlf.png'
 export const verifyUser = async (req, res) => {
   try {
     const [rest] = await pool.query(
-      'SELECT u.email, u.password FROM rol AS r\
-	      JOIN user_rol AS ur ON r.id_rol = ur.id_rol\
-        JOIN user AS u ON ur.id_user = u.id_user\
-      WHERE r.id_application = ? AND u.email = ?',
+      'SELECT u.email, u.password FROM rol AS r ' +
+        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+        'JOIN user AS u ON ur.id_user = u.id_user ' +
+        'WHERE r.id_application = ? AND u.email = ?',
       [req.params.id_application, req.params.email]
     );
     const user = rest.find(rest => rest.email === req.params.email);
@@ -70,10 +70,10 @@ export const verifyUser = async (req, res) => {
 export const getToken = async (req, res) => {
   try {
     const [rest] = await pool.query(
-      'SELECT u.id_user FROM rol AS r\
-        JOIN user_rol AS ur ON r.id_rol = ur.id_rol\
-        JOIN user AS u ON ur.id_user = u.id_user\
-      WHERE r.id_application = ? AND u.email = ?',
+      'SELECT u.id_user FROM rol AS r ' +
+        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+        'JOIN user AS u ON ur.id_user = u.id_user ' +
+        'WHERE r.id_application = ? AND u.email = ?',
       [req.params.id_application, req.params.email]
     );
     if (rest.length >= 1) {
@@ -89,11 +89,11 @@ export const getToken = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const [user] = await pool.query(
-      'SELECT u.id_user, u.email, r.name, ui.image_url FROM rol AS r\
-        JOIN user_rol AS ur ON r.id_rol = ur.id_rol\
-        JOIN user AS u ON ur.id_user = u.id_user\
-        JOIN user_image AS ui ON u.id_user = ui.id_user\
-      WHERE u.id_user = ?',
+      'SELECT u.id_user, u.email, r.name, ui.image_url FROM rol AS r ' +
+        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+        'JOIN user AS u ON ur.id_user = u.id_user ' +
+        'JOIN user_image AS ui ON u.id_user = ui.id_user ' +
+        'WHERE u.id_user = ?',
       [req.params.token]
     );
     res.send({

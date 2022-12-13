@@ -1,47 +1,49 @@
+import { v4 as uuid } from 'uuid';
 import { uploadImage } from '../utils/cloudinary.js';
 import pool from '../utils/db.js';
 import { encrypt } from '../utils/encript.js';
 
 export const postApplication = async (req, res) => {
   try {
-    const application = {
-      id_application: encrypt(req.body.name),
+    const app = {
+      id_app: uuid(),
       name: req.body.name,
       description: req.body.description,
-      manager_password: encrypt(req.body.manager_password),
+      password: encrypt(req.body.password),
       redirect_url: req.body.redirect_url,
       id_admin: req.body.id_admin
     };
-    await pool.query('INSERT INTO application SET ?', [application]);
 
     let result;
-    if (req.body.application_image !== '/assets/appImage.png') {
-      result = await uploadImage(req.body.application_image);
+
+    if (req.body.app_image !== '/assets/appImage.png') {
+      result = await uploadImage(req.body.app_image);
     } else {
       result = {
         public_id: 'common_auth/default_user',
         secure_url:
-          'https://res.cloudinary.com/drxe5f7aw/image/upload/\
-v1670560975/common_auth/default_user_qsdqlf.png'
+          'https://res.cloudinary.com/drxe5f7aw/image/upload/' +
+          'v1670560975/common_auth/default_user_qsdqlf.png'
       };
     }
+    await pool.query('INSERT INTO app SET ?', [app]);
 
     const image = {
       id_image: result.public_id,
       image_url: result.secure_url,
-      id_application: application.id_application
+      id_app: app.id_app
     };
 
-    await pool.query('INSERT INTO application_image SET ?', [image]);
+    await pool.query('INSERT INTO app_image SET ?', [image]);
 
     const roles = req.body.roles;
-    roles.map(async rol => {
-      const new_rol = {
-        name: rol.rol,
-        is_default: rol.useDefault ? 1 : 0,
-        id_application: application.id_application
+    roles.map(async role => {
+      const newRole = {
+        name: role.name,
+        is_default: role.isDefault ? 1 : 0,
+        id_app: app.id_app
       };
-      await pool.query('INSERT INTO rol SET ?', [new_rol]);
+      await pool.query('INSERT INTO role SET ?', [newRole]);
     });
 
     res.send({ message: 'Application registered' });
@@ -52,26 +54,24 @@ v1670560975/common_auth/default_user_qsdqlf.png'
 
 export const getApplication = async (req, res) => {
   try {
-    const [application] = await pool.query(
-      'SELECT * FROM application WHERE id_application = ?',
-      [req.params.id_application]
-    );
+    const [app] = await pool.query('SELECT * FROM app WHERE id_app = ?', [
+      req.params.id_app
+    ]);
     const [image] = await pool.query(
-      'SELECT * FROM application_image WHERE id_application = ?',
-      [req.params.id_application]
+      'SELECT * FROM app_image WHERE id_app = ?',
+      [req.params.id_app]
     );
-    const [roles] = await pool.query(
-      'SELECT * FROM rol WHERE id_application = ?',
-      [req.params.id_application]
-    );
-    const rol = roles.find(rol => rol.is_default === 1);
+    const [roles] = await pool.query('SELECT * FROM role WHERE id_app = ?', [
+      req.params.id_app
+    ]);
+    const role = roles.find(role => role.is_default === 1);
     res.send({
-      name: application[0].name,
-      description: application[0].description,
-      redirect_url: application[0].redirect_url,
+      name: app[0].name,
+      description: app[0].description,
+      redirect_url: app[0].redirect_url,
       image_url: image[0].image_url,
-      id_default_user: rol.id_rol,
-      name_default_user: rol.name
+      id_default_user: role.id_rol,
+      name_default_user: role.name
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
