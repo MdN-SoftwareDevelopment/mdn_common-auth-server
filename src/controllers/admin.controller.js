@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 export const postAdmin = async (req, res) => {
   try {
     const admin = {
-      id_admin: uuid,
+      id_admin: uuid(),
       email: req.body.email,
       password: encrypt(req.body.password)
     };
