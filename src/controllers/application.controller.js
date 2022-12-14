@@ -26,7 +26,6 @@ export const postApplication = async (req, res) => {
           'v1670560975/common_auth/default_user_qsdqlf.png'
       };
     }
-    await pool.query('INSERT INTO app SET ?', [app]);
 
     const image = {
       id_image: result.public_id,
@@ -34,6 +33,7 @@ export const postApplication = async (req, res) => {
       id_app: app.id_app
     };
 
+    await pool.query('INSERT INTO app SET ?', [app]);
     await pool.query('INSERT INTO app_image SET ?', [image]);
 
     const roles = req.body.roles;
@@ -54,24 +54,21 @@ export const postApplication = async (req, res) => {
 
 export const getApplication = async (req, res) => {
   try {
-    const [app] = await pool.query('SELECT * FROM app WHERE id_app = ?', [
-      req.params.id_app
-    ]);
-    const [image] = await pool.query(
-      'SELECT * FROM app_image WHERE id_app = ?',
+    const [app] = await pool.query(
+      'SELECT a.name, a.description, a.redirect_url,' +
+        'i.image_url, r.id_role, r.name ' +
+        'FROM app AS a JOIN app_image AS i ON a.id_app = i.id_app ' +
+        'JOIN role AS r ON a.id_app = r.id_app ' +
+        'WHERE a.id_app = ? AND r.is_default = 1',
       [req.params.id_app]
     );
-    const [roles] = await pool.query('SELECT * FROM role WHERE id_app = ?', [
-      req.params.id_app
-    ]);
-    const role = roles.find(role => role.is_default === 1);
     res.send({
       name: app[0].name,
       description: app[0].description,
       redirect_url: app[0].redirect_url,
-      image_url: image[0].image_url,
-      id_default_user: role.id_rol,
-      name_default_user: role.name
+      image_url: app[0].image_url,
+      id_default_user: app[0].id_role,
+      name_default_user: app[0].name
     });
   } catch (error) {
     res.status(500).send({ message: error.message });

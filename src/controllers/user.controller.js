@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { uploadImage } from '../utils/cloudinary.js';
 import pool from '../utils/db.js';
 import { decrypt, encrypt } from '../utils/encript.js';
@@ -5,13 +6,13 @@ import { decrypt, encrypt } from '../utils/encript.js';
 export const postUser = async (req, res) => {
   try {
     const user = {
-      id_user: encrypt(req.body.email),
+      id_user: uuid(),
       email: req.body.email,
       password: encrypt(req.body.password)
     };
-    await pool.query('INSERT INTO user SET ?', [user]);
 
     let result;
+
     if (req.body.user_image !== '/assets/addImage.png') {
       result = await uploadImage(req.body.user_image);
     } else {
@@ -29,12 +30,12 @@ export const postUser = async (req, res) => {
       id_user: user.id_user
     };
 
+    await pool.query('INSERT INTO user SET ?', [user]);
     await pool.query('INSERT INTO user_image SET ?', [user_image]);
-
-    await pool.query('INSERT INTO user_rol SET ?', [
+    await pool.query('INSERT INTO user_role SET ?', [
       {
         id_user: user.id_user,
-        id_rol: req.body.id_rol
+        id_role: req.body.id_role
       }
     ]);
 
@@ -44,21 +45,17 @@ export const postUser = async (req, res) => {
   }
 };
 
-export const verifyUser = async (req, res) => {
+export const verifyExistsUser = async (req, res) => {
   try {
-    const [rest] = await pool.query(
-      'SELECT u.email, u.password FROM rol AS r ' +
-        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+    const [user] = await pool.query(
+      'SELECT u.email, u.password FROM role AS r ' +
+        'JOIN user_role AS ur ON r.id_role = ur.id_role ' +
         'JOIN user AS u ON ur.id_user = u.id_user ' +
-        'WHERE r.id_application = ? AND u.email = ?',
-      [req.params.id_application, req.params.email]
+        'WHERE r.id_app = ? AND u.email = ?',
+      [req.params.id_app, req.params.email]
     );
-    const user = rest.find(rest => rest.email === req.params.email);
-    if (rest.length >= 1) {
-      res.send({
-        email: user.email,
-        password: decrypt(user.password)
-      });
+    if (user.length >= 1) {
+      res.send({ message: 'User already registered' });
     } else {
       res.send({ message: 'User can be registered' });
     }
@@ -67,19 +64,42 @@ export const verifyUser = async (req, res) => {
   }
 };
 
-export const getToken = async (req, res) => {
+export const verifyCredentialsUser = async (req, res) => {
   try {
-    const [rest] = await pool.query(
-      'SELECT u.id_user FROM rol AS r ' +
-        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+    const [user] = await pool.query(
+      'SELECT u.email, u.password FROM role AS r ' +
+        'JOIN user_role AS ur ON r.id_role = ur.id_role ' +
         'JOIN user AS u ON ur.id_user = u.id_user ' +
-        'WHERE r.id_application = ? AND u.email = ?',
-      [req.params.id_application, req.params.email]
+        'WHERE r.id_app = ? AND u.email = ?',
+      [req.params.id_app, req.params.email]
     );
-    if (rest.length >= 1) {
-      res.send({ token: rest[0].id_user });
+    if (user.length >= 1) {
+      if (req.params.password === decrypt(user[0].password)) {
+        res.send({ message: 'User verified' });
+      } else {
+        res.send({ message: 'Invalid Password' });
+      }
     } else {
-      res.send({ message: 'Invalid User' });
+      res.send({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+export const getUserToken = async (req, res) => {
+  try {
+    const [user] = await pool.query(
+      'SELECT u.id_user FROM role AS r ' +
+        'JOIN user_role AS ur ON r.id_role = ur.id_role ' +
+        'JOIN user AS u ON ur.id_user = u.id_user ' +
+        'WHERE r.id_app = ? AND u.email = ?',
+      [req.params.id_app, req.params.email]
+    );
+    if (user.length >= 1) {
+      res.send({ token: user[0].id_user });
+    } else {
+      res.send({ message: 'User not found' });
     }
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -89,8 +109,8 @@ export const getToken = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const [user] = await pool.query(
-      'SELECT u.id_user, u.email, r.name, ui.image_url FROM rol AS r ' +
-        'JOIN user_rol AS ur ON r.id_rol = ur.id_rol ' +
+      'SELECT u.id_user, u.email, r.name, ui.image_url FROM role AS r ' +
+        'JOIN user_role AS ur ON r.id_role = ur.id_role ' +
         'JOIN user AS u ON ur.id_user = u.id_user ' +
         'JOIN user_image AS ui ON u.id_user = ui.id_user ' +
         'WHERE u.id_user = ?',
