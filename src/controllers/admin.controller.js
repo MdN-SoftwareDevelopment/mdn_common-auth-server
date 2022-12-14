@@ -53,3 +53,19 @@ export const verifyCredentialsAdmin = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const getAdminToken = async (req, res) => {
+  try {
+    const [user] = await pool.query(
+      'SELECT a.id_admin FROM admin AS a WHERE a.email = ?',
+      [req.params.email]
+    );
+    if (user.length >= 1) {
+      res.send({ token: user[0].id_user });
+    } else {
+      res.send({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
