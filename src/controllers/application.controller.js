@@ -57,21 +57,22 @@ export const postApplication = async (req, res) => {
 
 export const getApplication = async (req, res) => {
   try {
+    console.log(req.body);
     const [app] = await pool.query(
-      'SELECT a.name, a.description, a.redirect_url,' +
-        'i.image_url, r.id_role, r.name ' +
+      'SELECT a.name AS app_name, a.description, a.redirect_url,' +
+        'i.image_url, r.id_role, r.name AS role_name ' +
         'FROM app AS a JOIN app_image AS i ON a.id_app = i.id_app ' +
         'JOIN role AS r ON a.id_app = r.id_app ' +
         'WHERE a.id_app = ? AND r.is_default = 1',
       [req.params.id_app]
     );
     res.send({
-      name: app[0].name,
+      name: app[0].app_name,
       description: app[0].description,
       redirect_url: app[0].redirect_url,
       image_url: app[0].image_url,
       id_default_user: app[0].id_role,
-      name_default_user: app[0].name
+      name_default_user: app[0].role_name
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
