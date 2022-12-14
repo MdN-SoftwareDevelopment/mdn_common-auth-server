@@ -14,3 +14,19 @@ export const postAdmin = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const verifyExistsAdmin = async (req, res) => {
+  try {
+    const [user] = await pool.query(
+      'SELECT * FROM admin AS a WHERE a.email = ?',
+      [req.params.email]
+    );
+    if (user.length >= 1) {
+      res.send({ message: 'Admin already registered' });
+    } else {
+      res.send({ message: 'Admin can be registered' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
