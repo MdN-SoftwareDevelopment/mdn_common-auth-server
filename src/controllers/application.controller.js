@@ -10,7 +10,10 @@ export const postApplication = async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       password: encrypt(req.body.password),
-      redirect_url: req.body.redirect_url,
+      redirect_url:
+        req.body.redirect_url[req.body.redirect_url.length - 1] !== '/'
+          ? req.body.redirect_url + '/'
+          : req.body.redirect_url,
       id_admin: req.body.id_admin
     };
 
