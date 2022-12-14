@@ -17,14 +17,37 @@ export const postAdmin = async (req, res) => {
 
 export const verifyExistsAdmin = async (req, res) => {
   try {
-    const [user] = await pool.query(
+    const [admin] = await pool.query(
       'SELECT * FROM admin AS a WHERE a.email = ?',
       [req.params.email]
     );
-    if (user.length >= 1) {
+    if (admin.length >= 1) {
       res.send({ message: 'Admin already registered' });
     } else {
       res.send({ message: 'Admin can be registered' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+export const verifyCredentialsAdmin = async (req, res) => {
+  try {
+    const [admin] = await pool.query(
+      'SELECT * FROM admin AS a WHERE a.email = ?',
+      [req.params.email]
+    );
+    if (admin.length >= 1) {
+      if (
+        encrypt(Buffer.from(req.params.password, 'base64').toString()) ===
+        admin[0].password
+      ) {
+        res.send({ message: 'User verified' });
+      } else {
+        res.send({ message: 'Invalid Password' });
+      }
+    } else {
+      res.send({ message: 'User not found' });
     }
   } catch (error) {
     res.status(500).send({ message: error.message });
