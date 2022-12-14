@@ -56,12 +56,12 @@ export const verifyCredentialsAdmin = async (req, res) => {
 
 export const getAdminToken = async (req, res) => {
   try {
-    const [user] = await pool.query(
+    const [admin] = await pool.query(
       'SELECT a.id_admin FROM admin AS a WHERE a.email = ?',
       [req.params.email]
     );
-    if (user.length >= 1) {
-      res.send({ token: user[0].id_user });
+    if (admin.length >= 1) {
+      res.send({ token: admin[0].id_admin });
     } else {
       res.send({ message: 'User not found' });
     }
