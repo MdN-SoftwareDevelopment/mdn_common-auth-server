@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   getAdminToken,
+  getAllApps,
   postAdmin,
   verifyCredentialsAdmin,
   verifyExistsAdmin
@@ -12,6 +13,6 @@ router.post('/new', postAdmin);
 router.get('/verify/:email', verifyExistsAdmin);
 router.get('/verify/credentials/:email/:password', verifyCredentialsAdmin);
 router.get('/token/:email', getAdminToken);
-router.get('/apps/:id_admin');
+router.get('/apps/:id_admin', getAllApps);
 
 export default router;
