@@ -3,7 +3,7 @@ import { ENCRYPT_IV, ENCRYPT_KEY } from '../config/server.js';
 
 export const encrypt = password => {
   const cipher = crypto.createCipheriv(
-    'aes-256-cbc',
+    'AES-256-GCM',
     Buffer.from(ENCRYPT_KEY, 'base64'),
     Buffer.from(ENCRYPT_IV, 'base64')
   );
@@ -14,7 +14,7 @@ export const encrypt = password => {
 
 export const decrypt = password => {
   const decipher = crypto.createDecipheriv(
-    'aes-256-cbc',
+    'AES-256-GCM',
     Buffer.from(ENCRYPT_KEY, 'base64'),
     Buffer.from(ENCRYPT_IV, 'base64')
   );

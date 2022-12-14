@@ -7,6 +7,6 @@ import {
 const router = Router();
 
 router.post('/new', postApplication);
-router.get('/:id_application', getApplication);
+router.get('/:id_app', getApplication);
 
 export default router;
