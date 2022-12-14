@@ -57,7 +57,6 @@ export const postApplication = async (req, res) => {
 
 export const getApplication = async (req, res) => {
   try {
-    console.log(req.body);
     const [app] = await pool.query(
       'SELECT a.name AS app_name, a.description, a.redirect_url,' +
         'i.image_url, r.id_role, r.name AS role_name ' +

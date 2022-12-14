@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { uploadImage } from '../utils/cloudinary.js';
 import pool from '../utils/db.js';
-import { decrypt, encrypt } from '../utils/encript.js';
+import { encrypt } from '../utils/encript.js';
 
 export const postUser = async (req, res) => {
   try {
@@ -74,7 +74,10 @@ export const verifyCredentialsUser = async (req, res) => {
       [req.params.id_app, req.params.email]
     );
     if (user.length >= 1) {
-      if (req.params.password === decrypt(user[0].password)) {
+      if (
+        encrypt(Buffer.from(req.params.password, 'base64').toString()) ===
+        user[0].password
+      ) {
         res.send({ message: 'User verified' });
       } else {
         res.send({ message: 'Invalid Password' });
