@@ -69,3 +69,30 @@ export const getAdminToken = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const getAllApps = async (req, res) => {
+  try {
+    let apps = {};
+    const [tmpApps] = await pool.query(
+      'SELECT a.id_app, a.name, a.description, a.redirect_url, ai.image_url, ' +
+        'ai.id_image FROM admin AS ad JOIN app AS a ' +
+        'ON ad.id_admin = a.id_admin JOIN app_image ' +
+        'AS ai ON a.id_app = ai.id_app ' +
+        'WHERE ad.id_admin = ?;',
+      [req.params.id_admin]
+    );
+    tmpApps.map(async app => {
+      const [roles] = await pool.query(
+        'SELECT r.id_role, r.name, r.is_default ' +
+          'FROM role AS r JOIN app AS a ON r.id_app = a.id_app ' +
+          'WHERE a.id_app = ?',
+        [app.id_app]
+      );
+      app = { ...app, roles };
+      apps = { ...apps, app };
+    });
+    res.send(apps);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
