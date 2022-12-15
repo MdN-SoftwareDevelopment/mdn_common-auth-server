@@ -66,6 +66,7 @@ export const verifyExistsUser = async (req, res) => {
 
 export const verifyCredentialsUser = async (req, res) => {
   try {
+    const password = Buffer.from(req.params.password, 'base64').toString();
     const [user] = await pool.query(
       'SELECT u.email, u.password FROM role AS r ' +
         'JOIN user_role AS ur ON r.id_role = ur.id_role ' +
@@ -74,10 +75,7 @@ export const verifyCredentialsUser = async (req, res) => {
       [req.params.id_app, req.params.email]
     );
     if (user.length >= 1) {
-      if (
-        encrypt(Buffer.from(req.params.password, 'base64').toString()) ===
-        user[0].password
-      ) {
+      if (encrypt(password) === user[0].password) {
         res.send({ message: 'User verified' });
       } else {
         res.send({ message: 'Invalid Password' });

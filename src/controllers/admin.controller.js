@@ -72,7 +72,7 @@ export const getAdminToken = async (req, res) => {
 
 export const getAllApps = async (req, res) => {
   try {
-    let apps = {};
+    const apps = [];
     const [tmpApps] = await pool.query(
       'SELECT a.id_app, a.name, a.description, a.redirect_url, ai.image_url, ' +
         'ai.id_image FROM admin AS ad JOIN app AS a ' +
@@ -81,17 +81,18 @@ export const getAllApps = async (req, res) => {
         'WHERE ad.id_admin = ?;',
       [req.params.id_admin]
     );
-    tmpApps.map(async app => {
-      const [roles] = await pool.query(
-        'SELECT r.id_role, r.name, r.is_default ' +
-          'FROM role AS r JOIN app AS a ON r.id_app = a.id_app ' +
-          'WHERE a.id_app = ?',
-        [app.id_app]
-      );
-      app = { ...app, roles };
-      apps = { ...apps, app };
-    });
-    res.send(apps);
+    // tmpApps.map(async (app, index) => {
+    //   const [roles] = await pool.query(
+    //     'SELECT r.id_role, r.name AS role_nam, r.is_default ' +
+    //       'FROM role AS r JOIN app AS a ON r.id_app = a.id_app ' +
+    //       'WHERE a.id_app = ?',
+    //     [app.id_app]
+    //   );
+    //   tmpApps[index] = { ...tmpApps, roles };
+    //   console.log(tmpApps[index]);
+    // });
+    console.log(tmpApps);
+    res.send(tmpApps);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

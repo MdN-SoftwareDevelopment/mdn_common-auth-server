@@ -9,7 +9,7 @@ export const encrypt = password => {
   );
   let encrypted = cipher.update(password, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return encrypted;
+  return encrypted.toString();
 };
 
 export const decrypt = password => {
@@ -20,5 +20,5 @@ export const decrypt = password => {
   );
   let decrypted = decipher.update(password, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
-  return decrypted;
+  return decrypted.toString();
 };
