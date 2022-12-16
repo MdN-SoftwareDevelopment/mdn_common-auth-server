@@ -77,3 +77,20 @@ export const getApplication = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const verifyAppCredentials = async (req, res) => {
+  try {
+    const password = Buffer.from(req.params.password, 'base64').toString();
+    const [app] = await pool.query(
+      'SELECT  app.password where app.id_app = ?',
+      [req.params.id_app]
+    );
+    if (encrypt(password) === app.password) {
+      res.send({ message: 'manager app password verified' });
+    } else {
+      res.send({ message: 'invalid password' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
