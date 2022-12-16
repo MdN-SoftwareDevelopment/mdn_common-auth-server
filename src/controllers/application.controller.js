@@ -94,3 +94,18 @@ export const verifyAppCredentials = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+export const verifyIfAppExist = async (req, res) => {
+  try {
+    const [app] = await pool.query('SELECT * FROM app AS a WHERE a.name = ?', [
+      req.params.name
+    ]);
+    if (app.length >= 1) {
+      res.send({ message: 'App Name already exist' });
+    } else {
+      res.send({ message: 'App Name can be registered' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
