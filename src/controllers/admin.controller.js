@@ -100,7 +100,7 @@ export const getAllApps = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const [users] = await pool.query(
-      'SELECT u.id_user, u.email, um.image_url, id_image ' +
+      'SELECT u.id_user, u.email, um.image_url, um.id_image ' +
         'FROM role AS r JOIN user_role AS ur ON r.id_role = ur.id_role ' +
         'JOIN user AS u ON ur.id_user = u.id_user ' +
         'JOIN user_image AS um ON u.id_user = um.id_user ' +
