@@ -72,28 +72,53 @@ export const getAdminToken = async (req, res) => {
 
 export const getAllApps = async (req, res) => {
   try {
-    const apps = [];
-    const [tmpApps] = await pool.query(
+    const [apps] = await pool.query(
       'SELECT a.id_app, a.name, a.description, a.redirect_url, ai.image_url, ' +
         'ai.id_image FROM admin AS ad JOIN app AS a ' +
         'ON ad.id_admin = a.id_admin JOIN app_image ' +
         'AS ai ON a.id_app = ai.id_app ' +
-        'WHERE ad.id_admin = ?;',
+        'WHERE ad.id_admin = ?',
       [req.params.id_admin]
     );
-    // tmpApps.map(async (app, index) => {
-    //   const [roles] = await pool.query(
-    //     'SELECT r.id_role, r.name AS role_nam, r.is_default ' +
-    //       'FROM role AS r JOIN app AS a ON r.id_app = a.id_app ' +
-    //       'WHERE a.id_app = ?',
-    //     [app.id_app]
-    //   );
-    //   tmpApps[index] = { ...tmpApps, roles };
-    //   console.log(tmpApps[index]);
-    // });
-    console.log(tmpApps);
-    res.send(tmpApps);
+    apps.forEach(async (app, index) => {
+      const [roles] = await pool.query(
+        'SELECT r.id_role, r.name, r.is_default ' +
+          'FROM role AS r JOIN app AS a ON r.id_app = a.id_app ' +
+          'WHERE a.id_app = ?',
+        [app.id_app]
+      );
+      apps[index].roles = roles;
+      if (index === apps.length - 1) {
+        res.send(apps);
+      }
+    });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const [users] = await pool.query(
+      'SELECT u.id_user, u.email, um.image_url, id_image ' +
+        'FROM role AS r JOIN user_role AS ur ON r.id_role = ur.id_role ' +
+        'JOIN user AS u ON ur.id_user = u.id_user ' +
+        'JOIN user_image AS um ON u.id_user = um.id_user ' +
+        'WHERE r.id_app = ?',
+      [req.params.id_app]
+    );
+    users.forEach(async (user, index) => {
+      const [roles] = await pool.query(
+        'SELECT r.id_role, r.name ' +
+          'FROM role AS r JOIN user_role AS ur ON r.id_role = ur.id_role ' +
+          'JOIN user AS u ON ur.id_user = u.id_user ' +
+          'WHERE u.id_user = ?',
+        [user.id_user]
+      );
+      users[index].roles = roles;
+      if (index === users.length - 1) {
+        res.send(users);
+      }
+    });
+  } catch (error) {}
 };
